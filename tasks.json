@@ -1,0 +1,93 @@
+{
+  // VS Code Tasks for Bulk Repository Updater
+  // ─────────────────────────────────────────────────────────────
+  // HOW TO USE:
+  //   Run a task:  Terminal → Run Task → pick one below
+  //   Shortcut:    Ctrl+Shift+B  →  runs "Dry Run (Safe Preview)"
+  //
+  // SETUP (one time):
+  //   1. Inside your project folder (e.g. C:\bulk-updater\),
+  //      create a subfolder called  .vscode
+  //   2. Copy this file into it:   C:\bulk-updater\.vscode\tasks.json
+  // ─────────────────────────────────────────────────────────────
+  "version": "2.0.0",
+  "tasks": [
+
+    // ── 1. DRY RUN — Safe preview, no GitHub changes ────────────
+    {
+      "label": "Dry Run (Safe Preview)",
+      "type": "shell",
+      "command": "python",
+      "args": ["bulk_updater.py", "--dry-run"],
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      },
+      "presentation": {
+        "reveal": "always",
+        "panel": "new",
+        "focus": true,
+        "clear": true
+      },
+      "problemMatcher": []
+    },
+
+    // ── 2. REAL RUN — Creates branches and PRs ──────────────────
+    {
+      "label": "Run Agent (Live - creates branches + PRs)",
+      "type": "shell",
+      "command": "python",
+      "args": ["bulk_updater.py"],
+      "group": "build",
+      "presentation": {
+        "reveal": "always",
+        "panel": "new",
+        "focus": true,
+        "clear": true
+      },
+      "problemMatcher": []
+    },
+
+    // ── 3. CUSTOM CONFIG — Point to a different config file ─────
+    {
+      "label": "Run with Custom Config File",
+      "type": "shell",
+      "command": "python",
+      "args": ["bulk_updater.py", "--config", "${input:configFile}"],
+      "group": "build",
+      "presentation": {
+        "reveal": "always",
+        "panel": "new",
+        "focus": true,
+        "clear": true
+      },
+      "problemMatcher": []
+    },
+
+    // ── 4. INSTALL DEPENDENCIES ─────────────────────────────────
+    {
+      "label": "Install Dependencies (pip)",
+      "type": "shell",
+      "command": "pip",
+      "args": ["install", "-r", "requirements.txt"],
+      "group": "build",
+      "presentation": {
+        "reveal": "always",
+        "panel": "shared",
+        "focus": true
+      },
+      "problemMatcher": []
+    }
+
+  ],
+
+  // ── Input prompt for custom config task ─────────────────────
+  "inputs": [
+    {
+      "id": "configFile",
+      "type": "promptString",
+      "description": "Config file name (e.g. team-a-config.yaml)",
+      "default": "repos_config.yaml"
+    }
+  ]
+}
