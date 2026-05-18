@@ -1,0 +1,83 @@
+# ══════════════════════════════════════════════════════════════
+#  INSTRUCTION SET: INST-001
+#  Add CODEOWNERS file to repository root
+# ══════════════════════════════════════════════════════════════
+#
+# HOW TO USE WITH COPILOT:
+#   In VS Code, open this file and ask Copilot in the chat:
+#   "@workspace Help me write the changes section for this
+#    instruction — I want to add a CODEOWNERS file that assigns
+#    the platform team as default owner."
+#
+# CHANGE TYPES AVAILABLE:
+#   file_create  — Create a new file (skips if it already exists)
+#   file_update  — Find-and-replace text in an existing file
+#   file_insert  — Insert text after/before a pattern in a file
+#   file_append  — Append text to the end of a file
+#   file_delete  — Delete a file
+
+
+# ── What this instruction does (shown in plan + PR) ─────────
+description: "Add CODEOWNERS file to repository root"
+
+# ── Pull Request details ─────────────────────────────────────
+pr_title: "[Auto] Add CODEOWNERS file"
+
+pr_description: |
+  This PR adds a `CODEOWNERS` file so that GitHub automatically
+  requests reviews from the appropriate teams when PRs are opened.
+
+  **Please review the owner assignments** and adjust if needed
+  before merging.
+
+# ── Skip check ───────────────────────────────────────────────
+# If this pattern is found in this file, the entire instruction
+# is skipped for that repository (update already exists).
+check_exists:
+  in_file: "CODEOWNERS"
+  pattern: "platform-team"   # If we see this, CODEOWNERS is already set up
+
+# ── Skip if branch exists ────────────────────────────────────
+# If the branch already exists, skip rather than overwrite.
+skip_if_branch_exists: true
+
+# ── PR Labels (optional) ─────────────────────────────────────
+# Labels to add to the PR. Labels must already exist in the repo.
+labels: []
+  # - "automated"
+  # - "no-changelog"
+
+# ── Changes ──────────────────────────────────────────────────
+# List of file operations to perform, in order.
+# Each change is applied to the branch before the PR is raised.
+changes:
+
+  - type: file_create
+    path: "CODEOWNERS"
+    commit_message: "chore: add CODEOWNERS file"
+    content: |
+      # CODEOWNERS
+      # ──────────────────────────────────────────────────────────
+      # Each line is a file pattern followed by one or more owners.
+      # Owners are automatically requested for review when a PR
+      # is opened that changes matching files.
+      #
+      # Docs: https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/customizing-your-repository/about-code-owners
+
+      # ── Global owners (fallback for all files) ──────────────
+      * @your-org/platform-team
+
+      # ── CI/CD and GitHub configuration ──────────────────────
+      .github/ @your-org/devops-team
+
+      # ── Source code ─────────────────────────────────────────
+      src/ @your-org/dev-team
+
+      # ── Infrastructure / Deployment ─────────────────────────
+      terraform/ @your-org/infrastructure-team
+      k8s/ @your-org/infrastructure-team
+      helm/ @your-org/infrastructure-team
+
+      # ── Documentation ───────────────────────────────────────
+      docs/ @your-org/docs-team
+      *.md @your-org/docs-team

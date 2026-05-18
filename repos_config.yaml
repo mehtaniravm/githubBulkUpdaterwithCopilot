@@ -1,0 +1,121 @@
+# ══════════════════════════════════════════════════════════════
+#  BULK REPOSITORY UPDATER — repos_config.yaml
+#  Main configuration file
+# ══════════════════════════════════════════════════════════════
+
+# ── GitHub Authentication ─────────────────────────────────────
+# Personal Access Token (Classic) with scopes:
+#   repo      — read/write to repositories
+#   workflow  — update GitHub Actions workflows
+#
+# Option A: Set directly here (NOT recommended for shared repos)
+github_token: ""
+#
+# Option B: Leave blank and set as environment variable:
+#   Windows:  set GITHUB_TOKEN=ghp_yourtoken
+#   Mac/Linux: export GITHUB_TOKEN=ghp_yourtoken
+#
+# How to create a token:
+#   GitHub → Settings → Developer settings → Personal access tokens
+#   → Tokens (classic) → Generate new token
+
+
+# ── Organization ─────────────────────────────────────────────
+# Your GitHub organization or user name
+# Used only for display/validation — not required for operation
+organization: "your-org-name"
+
+
+# ── Branch Settings ───────────────────────────────────────────
+# All branches created by the agent will start with this prefix.
+# The instruction set ID is appended automatically.
+# Example: "auto-update/" → creates "auto-update/inst-001"
+branch_prefix: "auto-update/"
+
+
+# ── Instructions Directory ────────────────────────────────────
+# Folder containing your instruction set YAML files.
+# Each file = one instruction set (e.g., INST-001.yaml).
+instructions_dir: "instructions"
+
+
+# ── Pull Request Settings ─────────────────────────────────────
+# GitHub usernames to add as PR reviewers (must be collaborators).
+# Can be overridden per-repository below.
+pr_reviewers:
+  - "reviewer-github-username"
+  # - "another-reviewer"
+
+# GitHub usernames to assign as PR assignees (optional)
+pr_assignees: []
+  # - "your-github-username"
+
+
+# ── Dry Run Mode ──────────────────────────────────────────────
+# When true: the agent runs all checks and shows the plan,
+#            but does NOT create branches, commits, or PRs.
+# Use this to validate your config before the real run.
+dry_run: false
+
+
+# ══════════════════════════════════════════════════════════════
+#  REPOSITORY LIST
+# ══════════════════════════════════════════════════════════════
+#
+# Each entry defines one repository to update.
+#
+# Fields:
+#   name            : (REQUIRED) Full repo name — "org/repo-name"
+#   base_branch     : Branch to branch FROM and PR INTO (default: "main")
+#   instruction_sets: List of instruction IDs to apply
+#                     IDs must match YAML filenames in instructions/
+#   pr_reviewers    : (OPTIONAL) Override global pr_reviewers for this repo
+#
+# TIP: Use GitHub Copilot to generate this list from a CSV or spreadsheet.
+#      Example prompt: "Convert this CSV of repo names into YAML entries
+#      following the pattern below."
+
+repositories:
+
+  # ── Example 1: Single instruction ──────────────────────────
+  - name: "your-org/service-api"
+    base_branch: "main"
+    instruction_sets:
+      - "INST-001"
+
+  # ── Example 2: Multiple instructions ───────────────────────
+  - name: "your-org/service-auth"
+    base_branch: "main"
+    instruction_sets:
+      - "INST-001"
+      - "INST-002"
+
+  # ── Example 3: Different base branch ───────────────────────
+  - name: "your-org/service-payments"
+    base_branch: "develop"
+    instruction_sets:
+      - "INST-001"
+      - "INST-003"
+
+  # ── Example 4: Override reviewers for this repo ────────────
+  - name: "your-org/service-billing"
+    base_branch: "main"
+    instruction_sets:
+      - "INST-002"
+    pr_reviewers:
+      - "billing-team-lead"
+
+  # ─────────────────────────────────────────────────────────
+  # ADD YOUR 200+ REPOSITORIES BELOW, ONE ENTRY PER REPO
+  # ─────────────────────────────────────────────────────────
+  #
+  # - name: "your-org/repo-name-here"
+  #   base_branch: "main"
+  #   instruction_sets:
+  #     - "INST-001"
+  #
+  # - name: "your-org/another-repo"
+  #   base_branch: "main"
+  #   instruction_sets:
+  #     - "INST-001"
+  #     - "INST-002"

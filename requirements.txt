@@ -1,0 +1,5 @@
+# Bulk Repository Updater — Python Dependencies
+# Install with:  pip install -r requirements.txt
+
+PyGithub>=1.59.0       # GitHub API client
+PyYAML>=6.0            # YAML config/instruction parsing

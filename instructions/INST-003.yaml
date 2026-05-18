@@ -1,0 +1,73 @@
+# ══════════════════════════════════════════════════════════════
+#  INSTRUCTION SET: INST-003
+#  Update Node.js version in CI + package.json
+#  (Example of a multi-change, file_update instruction)
+# ══════════════════════════════════════════════════════════════
+
+description: "Upgrade Node.js version from 16 to 20 in CI workflows and package.json"
+
+pr_title: "[Auto] Upgrade Node.js 16 → 20"
+
+pr_description: |
+  Node.js 16 reached end-of-life in September 2023.
+  This PR upgrades all references to Node.js 20 LTS.
+
+  **Changes:**
+  - `.github/workflows/ci.yml` — updated `node-version` matrix
+  - `package.json` — updated `engines.node` field
+
+  Please verify that your application is compatible with Node 20
+  before merging.
+
+# ── Skip check ───────────────────────────────────────────────
+# Skip if the CI workflow already references Node 20.
+check_exists:
+  in_file: ".github/workflows/ci.yml"
+  pattern: "node-version: '20'"
+
+skip_if_branch_exists: true
+
+labels: []
+  # - "dependencies"
+  # - "maintenance"
+
+# ── Changes ──────────────────────────────────────────────────
+# This instruction applies MULTIPLE changes across MULTIPLE files.
+changes:
+
+  # Change 1: Update CI workflow node version matrix
+  - type: file_update
+    path: ".github/workflows/ci.yml"
+    commit_message: "ci: upgrade Node.js 16 to 20 in CI matrix"
+    replacements:
+      - search: "node-version: '16'"
+        replace: "node-version: '20'"
+      - search: "node-version: 16"
+        replace: "node-version: 20"
+      - search: "node-version: [16]"
+        replace: "node-version: [20]"
+      - search: "node-version: ['16']"
+        replace: "node-version: ['20']"
+
+  # Change 2: Update engines field in package.json
+  - type: file_update
+    path: "package.json"
+    commit_message: "chore: update engines.node to >=20"
+    replacements:
+      - search: '"node": ">=16"'
+        replace: '"node": ">=20"'
+      - search: '"node": "^16"'
+        replace: '"node": "^20"'
+      - search: '"node": "16.x"'
+        replace: '"node": "20.x"'
+
+  # Change 3: Add a note to CHANGELOG if it exists
+  # (This uses file_insert — skipped if already present)
+  - type: file_insert
+    path: "CHANGELOG.md"
+    commit_message: "docs: note Node 20 upgrade in CHANGELOG"
+    insert_after: "## [Unreleased]"
+    skip_if_present: "Node.js 16 → 20"
+    content: |
+      ### Changed
+      - Upgraded Node.js runtime from 16 to 20 LTS

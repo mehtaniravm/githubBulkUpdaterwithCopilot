@@ -1,0 +1,78 @@
+# ══════════════════════════════════════════════════════════════
+#  INSTRUCTION SET: INST-002
+#  Add GitHub Actions security scanning workflow
+# ══════════════════════════════════════════════════════════════
+
+description: "Add CodeQL security scanning GitHub Actions workflow"
+
+pr_title: "[Auto] Add security scanning workflow (CodeQL)"
+
+pr_description: |
+  This PR adds a GitHub Actions workflow that runs **CodeQL**
+  security analysis on every push and pull request.
+
+  The workflow also runs on a weekly schedule (Mondays).
+
+  No code changes are required — this is a new CI file only.
+
+# ── Skip check ───────────────────────────────────────────────
+# Skip if the workflow file already contains CodeQL config.
+check_exists:
+  in_file: ".github/workflows/security-scan.yml"
+  pattern: "CodeQL"
+
+skip_if_branch_exists: true
+
+labels: []
+
+# ── Changes ──────────────────────────────────────────────────
+changes:
+
+  - type: file_create
+    path: ".github/workflows/security-scan.yml"
+    commit_message: "ci: add CodeQL security scanning workflow"
+    content: |
+      name: Security Scan
+
+      on:
+        push:
+          branches: [ main, develop, master ]
+        pull_request:
+          branches: [ main, develop, master ]
+        schedule:
+          # Run every Monday at midnight UTC
+          - cron: '0 0 * * 1'
+
+      jobs:
+        analyze:
+          name: CodeQL Analysis
+          runs-on: ubuntu-latest
+
+          permissions:
+            security-events: write
+            actions: read
+            contents: read
+
+          strategy:
+            fail-fast: false
+            matrix:
+              # Adjust languages to match your repository.
+              # Supported: c-cpp, csharp, go, java-kotlin, javascript-typescript, python, ruby, swift
+              language: [ 'javascript-typescript' ]
+
+          steps:
+            - name: Checkout repository
+              uses: actions/checkout@v4
+
+            - name: Initialize CodeQL
+              uses: github/codeql-action/init@v3
+              with:
+                languages: ${{ matrix.language }}
+
+            - name: Autobuild
+              uses: github/codeql-action/autobuild@v3
+
+            - name: Perform CodeQL Analysis
+              uses: github/codeql-action/analyze@v3
+              with:
+                category: "/language:${{ matrix.language }}"
